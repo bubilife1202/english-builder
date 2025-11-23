@@ -17,16 +17,12 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
   },
   scene: [MainScene, BattleScene],
   scale: {
-    mode: Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
-    width: 800,
-    height: 600,
+    mode: Phaser.Scale.NONE,
+    autoCenter: Phaser.Scale.NO_CENTER,
   },
-  input: {
-    activePointers: 3, // Support multi-touch
-  },
-  dom: {
-    createContainer: true,
+  render: {
+    pixelArt: false,
+    antialias: true,
   },
 };
 
