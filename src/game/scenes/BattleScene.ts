@@ -179,8 +179,16 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private createActionButtons() {
+    // If no words, show only Flee button
+    if (this.playerWords.length === 0) {
+      this.createButton(400, 520, '🏃 Flee (Collect words first!)', 0xE67E22, () => {
+        this.fleeBattle();
+      });
+      return;
+    }
+
     // Attack button
-    this.createButton(300, 520, '⚔️ Attack!', 0x27AE60, () => {
+    this.createButton(250, 520, '⚔️ Attack!', 0x27AE60, () => {
       this.attackMonster();
     });
 
@@ -190,8 +198,13 @@ export class BattleScene extends Phaser.Scene {
     });
 
     // Clear button
-    this.createButton(500, 520, '❌ Clear', 0xE74C3C, () => {
+    this.createButton(550, 520, '❌ Clear', 0xE74C3C, () => {
       this.clearSlots();
+    });
+
+    // Flee button (always available)
+    this.createButton(700, 520, '🏃 Flee', 0xE67E22, () => {
+      this.fleeBattle();
     });
   }
 
@@ -405,6 +418,24 @@ export class BattleScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     this.time.delayedCall(2000, () => {
+      this.onBattleEnd(false);
+    });
+  }
+
+  private fleeBattle() {
+    this.add.rectangle(400, 300, 800, 600, 0x000000, 0.7);
+    this.add.text(400, 280, '🏃 Escaped!', {
+      fontSize: '36px',
+      color: '#E67E22',
+      fontStyle: 'bold',
+    }).setOrigin(0.5);
+
+    this.add.text(400, 340, 'Collect words before battling!', {
+      fontSize: '20px',
+      color: '#fff',
+    }).setOrigin(0.5);
+
+    this.time.delayedCall(1500, () => {
       this.onBattleEnd(false);
     });
   }

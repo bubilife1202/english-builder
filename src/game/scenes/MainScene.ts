@@ -49,6 +49,31 @@ export class MainScene extends Phaser.Scene {
     // Camera follows player
     this.cameras.main.setBounds(0, 0, 1600, 600);
     this.cameras.main.startFollow(this.player);
+
+    // Show tutorial message
+    this.showTutorial();
+  }
+
+  private showTutorial() {
+    const tutorial = this.add.text(400, 250, '🎮 Welcome to Vocab Quest!\n\n📦 Collect yellow word boxes\n⚔️ Battle red monsters\n🏆 Make correct sentences to win!', {
+      fontSize: '20px',
+      color: '#fff',
+      backgroundColor: '#2C3E50',
+      padding: { x: 30, y: 20 },
+      align: 'center',
+    }).setOrigin(0.5);
+    tutorial.setScrollFactor(0);
+    tutorial.setDepth(200);
+
+    this.tweens.add({
+      targets: tutorial,
+      alpha: 0,
+      duration: 1000,
+      delay: 3000,
+      onComplete: () => {
+        tutorial.destroy();
+      },
+    });
   }
 
   private createPlaceholderAssets() {
@@ -234,6 +259,12 @@ export class MainScene extends Phaser.Scene {
     const monsterSprite = monster as Phaser.Physics.Arcade.Sprite;
     const wrongSentence = monsterSprite.getData('sentence');
 
+    // Check if player has words
+    if (this.collectedWords.length === 0) {
+      this.showWarning('⚠️ Collect words first before battling!\n📦 Find yellow word boxes on the map!');
+      return;
+    }
+
     console.log('Battle started! Wrong sentence:', wrongSentence);
 
     // Pass data to battle scene
@@ -251,6 +282,29 @@ export class MainScene extends Phaser.Scene {
         if (won) {
           monsterSprite.destroy();
         }
+      },
+    });
+  }
+
+  private showWarning(message: string) {
+    const warning = this.add.text(400, 300, message, {
+      fontSize: '24px',
+      color: '#fff',
+      backgroundColor: '#E67E22',
+      padding: { x: 30, y: 20 },
+      align: 'center',
+    }).setOrigin(0.5);
+    warning.setScrollFactor(0);
+    warning.setDepth(200);
+
+    this.tweens.add({
+      targets: warning,
+      alpha: 0,
+      y: 280,
+      duration: 2500,
+      ease: 'Power2',
+      onComplete: () => {
+        warning.destroy();
       },
     });
   }
