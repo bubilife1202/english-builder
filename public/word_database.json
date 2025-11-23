@@ -1,0 +1,128 @@
+[
+  {
+    "id": "word_001",
+    "text": "I",
+    "type": "noun",
+    "meaning": "나",
+    "drop_biome": "forest",
+    "difficulty": 1,
+    "blockType": "stone"
+  },
+  {
+    "id": "word_002",
+    "text": "Apple",
+    "type": "noun",
+    "meaning": "사과",
+    "drop_biome": "forest",
+    "difficulty": 1,
+    "blockType": "wood"
+  },
+  {
+    "id": "word_003",
+    "text": "Cat",
+    "type": "noun",
+    "meaning": "고양이",
+    "drop_biome": "forest",
+    "difficulty": 1,
+    "blockType": "wood"
+  },
+  {
+    "id": "word_004",
+    "text": "Dog",
+    "type": "noun",
+    "meaning": "개",
+    "drop_biome": "forest",
+    "difficulty": 1,
+    "blockType": "wood"
+  },
+  {
+    "id": "word_005",
+    "text": "House",
+    "type": "noun",
+    "meaning": "집",
+    "drop_biome": "village",
+    "difficulty": 1,
+    "blockType": "wood"
+  },
+  {
+    "id": "word_006",
+    "text": "Eat",
+    "type": "verb",
+    "meaning": "먹다",
+    "drop_biome": "village",
+    "difficulty": 1,
+    "blockType": "dirt"
+  },
+  {
+    "id": "word_007",
+    "text": "Run",
+    "type": "verb",
+    "meaning": "달리다",
+    "drop_biome": "desert",
+    "difficulty": 1,
+    "blockType": "dirt"
+  },
+  {
+    "id": "word_008",
+    "text": "Jump",
+    "type": "verb",
+    "meaning": "점프하다",
+    "drop_biome": "desert",
+    "difficulty": 1,
+    "blockType": "dirt"
+  },
+  {
+    "id": "word_009",
+    "text": "Build",
+    "type": "verb",
+    "meaning": "짓다",
+    "drop_biome": "village",
+    "difficulty": 1,
+    "blockType": "dirt"
+  },
+  {
+    "id": "word_010",
+    "text": "Like",
+    "type": "verb",
+    "meaning": "좋아하다",
+    "drop_biome": "village",
+    "difficulty": 1,
+    "blockType": "dirt"
+  },
+  {
+    "id": "word_011",
+    "text": "Red",
+    "type": "adjective",
+    "meaning": "빨간",
+    "drop_biome": "desert",
+    "difficulty": 1,
+    "blockType": "grass"
+  },
+  {
+    "id": "word_012",
+    "text": "Big",
+    "type": "adjective",
+    "meaning": "큰",
+    "drop_biome": "forest",
+    "difficulty": 1,
+    "blockType": "grass"
+  },
+  {
+    "id": "word_013",
+    "text": "Small",
+    "type": "adjective",
+    "meaning": "작은",
+    "drop_biome": "forest",
+    "difficulty": 1,
+    "blockType": "grass"
+  },
+  {
+    "id": "word_014",
+    "text": "Fast",
+    "type": "adjective",
+    "meaning": "빠른",
+    "drop_biome": "desert",
+    "difficulty": 1,
+    "blockType": "grass"
+  }
+]
