@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { MobileControls } from '../systems/MobileControls';
 
 export class MainScene extends Phaser.Scene {
   private player!: Phaser.Physics.Arcade.Sprite;
@@ -7,6 +8,7 @@ export class MainScene extends Phaser.Scene {
   private wordBoxes!: Phaser.Physics.Arcade.Group;
   private monsters!: Phaser.Physics.Arcade.Group;
   private collectedWords: string[] = [];
+  private mobileControls!: MobileControls;
 
   constructor() {
     super({ key: 'MainScene' });
@@ -33,6 +35,10 @@ export class MainScene extends Phaser.Scene {
 
     // Setup controls
     this.cursors = this.input.keyboard!.createCursorKeys();
+
+    // Setup mobile controls
+    this.mobileControls = new MobileControls(this);
+    this.mobileControls.create();
 
     // Setup collisions
     this.setupCollisions();
@@ -250,11 +256,14 @@ export class MainScene extends Phaser.Scene {
   }
 
   update() {
-    // Player movement
-    if (this.cursors.left.isDown) {
+    // Get mobile controls
+    const mobileInput = this.mobileControls?.getMovement() || { left: false, right: false, jump: false };
+
+    // Player movement (keyboard or mobile)
+    if (this.cursors.left.isDown || mobileInput.left) {
       this.player.setVelocityX(-200);
       this.player.setFlipX(true);
-    } else if (this.cursors.right.isDown) {
+    } else if (this.cursors.right.isDown || mobileInput.right) {
       this.player.setVelocityX(200);
       this.player.setFlipX(false);
     } else {
@@ -262,7 +271,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     // Jump (MapleStory style - can only jump when on ground)
-    if (this.cursors.up.isDown && this.player.body!.touching.down) {
+    if ((this.cursors.up.isDown || mobileInput.jump) && this.player.body!.touching.down) {
       this.player.setVelocityY(-400);
     }
 
