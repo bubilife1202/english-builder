@@ -1,121 +1,120 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace GrammarGuardian
+namespace SpellCaster
 {
-    // Enums for Word Types
-    public enum WordType { Noun, Verb, Adjective, Preposition, Pronoun }
+    public enum SpellType { Attack, Defense, Utility }
 
-    // Data Class for Word Cards
+    // Data class for Spells
     [Serializable]
-    public class WordCard
+    public class SpellData
     {
-        public int id;
-        public string text;
-        public WordType type;
-        public int manaCost;
+        public string id;
+        public string keyword; // The magic word! (e.g., "FIRE")
+        public SpellType type;
         public int power;
+        public float cooldown;
 
-        public WordCard(int id, string text, WordType type, int cost, int power)
+        public SpellData(string id, string keyword, SpellType type, int power)
         {
             this.id = id;
-            this.text = text;
+            this.keyword = keyword.ToUpper(); // Case insensitive
             this.type = type;
-            this.manaCost = cost;
             this.power = power;
+            this.cooldown = 1.0f;
         }
     }
 
     /// <summary>
-    /// Manages the Turn-Based Battle Logic.
-    /// Incorporates the "Sentence = Skill" mechanic.
+    /// Manages real-time combat logic based on voice commands.
+    /// No turns, just action.
     /// </summary>
     public class BattleManager
     {
-        private LocalNLPManager nlpManager;
-        private List<WordCard> playerHand;
-        private int playerMana;
+        private VoiceInputHandler voiceHandler;
+        private Dictionary<string, SpellData> spellBook;
 
-        // Mock Enemy State
-        private int enemyHp = 100;
+        // Game State
+        private int enemyHp = 500;
+        private bool isBattleActive = true;
 
         public BattleManager()
         {
-            nlpManager = new LocalNLPManager();
-            playerHand = new List<WordCard>();
-            playerMana = 10;
+            voiceHandler = new VoiceInputHandler();
+            spellBook = new Dictionary<string, SpellData>();
 
-            // Initial Draw
-            DrawCard(new WordCard(1, "I", WordType.Pronoun, 1, 0));
-            DrawCard(new WordCard(2, "Attack", WordType.Verb, 3, 20));
-            DrawCard(new WordCard(3, "The", WordType.Adjective, 1, 0)); // Article treated as Adj for simplification
-            DrawCard(new WordCard(4, "Monster", WordType.Noun, 2, 5));
+            // Initialize Spellbook (The player's memory)
+            RegisterSpell(new SpellData("s_01", "FIRE", SpellType.Attack, 50));
+            RegisterSpell(new SpellData("s_02", "ICE", SpellType.Attack, 50));
+            RegisterSpell(new SpellData("s_03", "HEAL", SpellType.Utility, -30)); // Negative damage = heal
+            RegisterSpell(new SpellData("s_04", "SHIELD", SpellType.Defense, 0));
+
+            // Subscribe to voice events
+            voiceHandler.OnKeywordRecognized += CastSpell;
+
+            Console.WriteLine("[Battle] Battle Started! A Giant Golem appears!");
+            Console.WriteLine("[Battle] Shout 'FIRE', 'ICE', or 'HEAL'!");
         }
 
-        public void DrawCard(WordCard card)
+        private void RegisterSpell(SpellData spell)
         {
-            playerHand.Add(card);
-            Console.WriteLine($"[Battle] Drew card: [{card.text}]");
+            // In a real game, use a Trie or efficient lookup for many words
+            if (!spellBook.ContainsKey(spell.keyword))
+            {
+                spellBook.Add(spell.keyword, spell);
+            }
         }
 
         /// <summary>
-        /// Player attempts to cast a spell by forming a sentence.
+        /// This method is called IMMEDIATELY when the voice engine detects a keyword.
         /// </summary>
-        /// <param name="selectedCardIndices">Indices of cards in hand to combine</param>
-        public void CastSentenceSkill(List<int> selectedCardIndices)
+        public void CastSpell(string keyword)
         {
-            List<WordCard> sentenceChain = new List<WordCard>();
-            StringBuilder sentenceBuilder = new StringBuilder();
-            int totalCost = 0;
-            int totalPower = 0;
+            if (!isBattleActive) return;
 
-            foreach (int index in selectedCardIndices)
+            keyword = keyword.ToUpper();
+
+            if (spellBook.TryGetValue(keyword, out SpellData spell))
             {
-                if (index < 0 || index >= playerHand.Count) continue;
-
-                WordCard card = playerHand[index];
-                sentenceChain.Add(card);
-                sentenceBuilder.Append(card.text).Append(" ");
-                totalCost += card.manaCost;
-                totalPower += card.power;
-            }
-
-            string fullSentence = sentenceBuilder.ToString().Trim();
-            Console.WriteLine($"[Battle] Casting: \"{fullSentence}\"");
-
-            // 1. Check Mana
-            if (playerMana < totalCost)
-            {
-                Console.WriteLine("[Battle] Not enough Mana!");
-                return;
-            }
-
-            // 2. Validate Grammar (Local NLP)
-            bool isValid = nlpManager.ValidateSentence(sentenceChain);
-
-            if (isValid)
-            {
-                // Critical Hit if grammar is perfect
-                float damageMultiplier = 1.5f;
-                int finalDamage = (int)(totalPower * damageMultiplier);
-
-                enemyHp -= finalDamage;
-                playerMana -= totalCost;
-
-                Console.WriteLine($"[Battle] Success! The spell hits purely! Dealt {finalDamage} damage.");
-                Console.WriteLine($"[Battle] Enemy HP: {enemyHp}");
+                Console.WriteLine($"[Battle] Player shouts: \"{keyword}!\"");
+                ProcessSpellEffect(spell);
             }
             else
             {
-                // Fizzle or weak attack
-                int weakDamage = (int)(totalPower * 0.1f);
-                enemyHp -= weakDamage;
-                playerMana -= totalCost;
-
-                Console.WriteLine("[Battle] The sentence is grammatically unstable... The spell fizzles.");
-                Console.WriteLine($"[Battle] Dealt {weakDamage} damage.");
+                // Unrecognized magic
+                Console.WriteLine($"[Battle] Player shouts: \"{keyword}\"... but nothing happens.");
             }
+        }
+
+        private void ProcessSpellEffect(SpellData spell)
+        {
+            switch (spell.type)
+            {
+                case SpellType.Attack:
+                    enemyHp -= spell.power;
+                    Console.WriteLine($"[Effect] > BOOM! {spell.keyword} hits the enemy for {spell.power} damage!");
+                    break;
+                case SpellType.Utility: // Heal
+                    Console.WriteLine($"[Effect] > Divine light surrounds you. Recovered {-spell.power} HP.");
+                    break;
+                case SpellType.Defense:
+                    Console.WriteLine($"[Effect] > A magical barrier appears!");
+                    break;
+            }
+
+            Console.WriteLine($"[Enemy] HP: {enemyHp}");
+
+            if (enemyHp <= 0)
+            {
+                isBattleActive = false;
+                Console.WriteLine("[Battle] VICTORY! The Golem crumbles.");
+            }
+        }
+
+        // Method to simulate raw input from microphone (for testing)
+        public void SimulateMicInput(string text)
+        {
+            voiceHandler.ProcessRawInput(text);
         }
     }
 }
